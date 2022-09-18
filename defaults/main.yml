@@ -1,7 +1,8 @@
 ---
-monero__version: 0.17.3.2
+monero__version: 0.18.1.0
+monero__hash: 9318e522a5cf95bc856772f15d7507fdef2c028e01f70d020078ad5e208f1304
 monero__container_name: monerod-node
+monero__image_name: monerod:{{ monero__version}}
 monero__data_dir: /var/monero/
-monero__config_file: files/monerod.conf
 monero__p2p_port: 18080
 monero__rpc_port: 18081

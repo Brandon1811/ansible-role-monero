@@ -1,4 +1,4 @@
-- name: 'Creating data directory for Monero'
+- name: Creating data directory for Monero
   ansible.builtin.file:
     path: '{{ monero__data_dir }}'
     owner: '1337'
@@ -7,17 +7,41 @@
     state: directory
 
 - name: 'Copy monero config file'
-  ansible.builtin.copy:
-    src: '{{ monero__config_file }}'
-    dest: '{{ monero__data_dir }}/monerod.conf'
+  template:
+    src: 'monerod.conf.j2.j2'
+    dest: '{{ monero__data_dir }}/monerod.conf.j2'
     owner: '1337'
     group: '1337'
     mode: '660'
 
+- name: Copy Dockerfile to {{ monero__data_dir }}
+  template:
+    src: Dockerfile.j2
+    dest: "{{ monero__data_dir }}/Dockerfile"
+    owner: '1337'
+    group: '1337'
+    mode: '660'
+
+- name: Build image using cache source
+  community.docker.docker_image:
+    name: "{{ monero__image_name }}"
+    build:
+      path: "{{ monero__data_dir }}"
+    source: build
+
+- name: Copy docker-compose.yml to {{ monero__data_dir }}
+  template:
+    src: Dockerfile.j2
+    dest: "{{ monero__data_dir }}/Dockerfile"
+    owner: '1337'
+    group: '1337'
+    mode: '660'
+  when: false #testing still ignore
+
 - name: "Setup Monero's docker container"
   community.general.docker_container:
     name: '{{ monero__container_name }}'
-    image: 'salessandri/monerod:{{ monero__version }}'
+    image: "{{ monero__image_name }}"
     mounts:
       - source: "{{ monero__data_dir }}"
         target: /home/monero/.bitmonero
@@ -30,5 +54,5 @@
     state: started
     command:
       - '--config-file'
-      - '/home/monero/.bitmonero/monerod.conf'
+      - '/home/monero/.bitmonero/monerod.conf.j2'
       - '--non-interactive'
