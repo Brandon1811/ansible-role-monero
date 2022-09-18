@@ -8,7 +8,7 @@
 
 - name: 'Copy monero config file'
   template:
-    src: 'monerod.conf.j2.j2'
+    src: monerod.conf.j2
     dest: '{{ monero__data_dir }}/monerod.conf.j2'
     owner: '1337'
     group: '1337'
