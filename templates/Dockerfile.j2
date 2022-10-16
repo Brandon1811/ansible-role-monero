@@ -33,4 +33,8 @@ CMD ["--non-interactive", \
     "--rpc-bind-ip=0.0.0.0", \
     "--confirm-external-bind", \
     "--enable-dns-blocklist" \
+    {% if monero__enable_p2p %}
+    "--disable-dns-checkpoints" \
+    "---zmq-pub=tcp://127.0.0.1:{{ unrestricted_port }}" \
+    {% endif %}
     ]
